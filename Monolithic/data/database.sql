@@ -2,11 +2,6 @@ create database messages;
 
 use messages;
 
-create table messages (
-	id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,	
-	message VARCHAR(250) NOT NULL
-);
-
 create table users (
 	userid VARCHAR(30) NOT NULL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL
@@ -19,17 +14,6 @@ create table usermessages(
 	FOREIGN KEY (userid) REFERENCES users(userid)	
 );
 
--- GetMessages
-
-DELIMITER //
-
-CREATE PROCEDURE GetMessages()
-BEGIN
-	SELECT * FROM messages;
-END //
-
-DELIMITER ;
-
 -- GetUserMessages
 
 DELIMITER //
@@ -41,18 +25,8 @@ END //
 
 DELIMITER ;
 
--- AddMessage
-
-DELIMITER //
-
-CREATE PROCEDURE AddMessage(IN in_message VARCHAR(250))
-BEGIN
-	insert into messages (message) values (in_message);
-END //
-
-DELIMITER ;
-
 -- AddUserMessage
+
 DELIMITER //
 
 CREATE PROCEDURE AddUserMessage(IN in_userid VARCHAR(30), IN in_message VARCHAR(250))
@@ -86,10 +60,7 @@ DELIMITER ;
 
 
 
-insert into users (userid, name) values ("abc", "AlvarDev");
-CALL AddMessage("This is a simple new message");
-CALL AddUserMessage("abc", "Hola Mundo!");
-
-CALL GetMessages();
-CALL GetUserMessages("abc");
+insert into users (userid, name) values ("alvardev", "AlvarDev");
+CALL AddUserMessage("alvardev", "Hola Mundo!");
+CALL GetUserMessages("alvardev");
 

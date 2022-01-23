@@ -44,13 +44,13 @@ func getConnection() *sql.DB {
 	return db
 }
 
-func GetMessages() (models.Messages, error) {
+func GetMessages(userid string) (models.UserMessages, error) {
 
 	db := getConnection()
 	defer db.Close()
-	messages := models.Messages{}
+	messages := models.UserMessages{}
 
-	rows, err := db.Query("CALL GetMessages();")
+	rows, err := db.Query("CALL GetUserMessages(?);", userid)
 	if err != nil {
 		return messages, fmt.Errorf("message: %v", err)
 	}
@@ -58,9 +58,9 @@ func GetMessages() (models.Messages, error) {
 
 	// Loop through rows, using Scan to assign column data to struct fields.
 	for rows.Next() {
-		msg := models.Message{}
+		msg := models.UserMessage{}
 
-		if err := rows.Scan(&msg.Id, &msg.Message); err != nil {
+		if err := rows.Scan(&msg.UserId, &msg.MessageId, &msg.Message); err != nil {
 			return messages, fmt.Errorf("message: %v", err)
 		}
 		messages.List = append(messages.List, msg)
@@ -70,6 +70,7 @@ func GetMessages() (models.Messages, error) {
 		return messages, fmt.Errorf("message: %v", err)
 	}
 
+	fmt.Println(messages)
 	return messages, nil
 }
 
