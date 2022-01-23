@@ -45,11 +45,10 @@ func getConnection() *sql.DB {
 }
 
 func GetMessages(userid string) (models.UserMessages, error) {
-
 	db := getConnection()
 	defer db.Close()
-	messages := models.UserMessages{}
 
+	messages := models.UserMessages{}
 	rows, err := db.Query("CALL GetUserMessages(?);", userid)
 	if err != nil {
 		return messages, fmt.Errorf("message: %v", err)
@@ -70,19 +69,26 @@ func GetMessages(userid string) (models.UserMessages, error) {
 		return messages, fmt.Errorf("message: %v", err)
 	}
 
-	fmt.Println(messages)
 	return messages, nil
 }
 
+func AddMessage(umsg models.UserMessage) (models.UserMessage, error) {
+	db := getConnection()
+	defer db.Close()
+
+	result, err := db.Exec("CALL AddUserMessage(?,?)", umsg.UserId, umsg.Message)
+	if err != nil {
+		return umsg, fmt.Errorf("addMessage: %v", err)
+	}
+
+	umsg.MessageId, err = result.LastInsertId()
+	if err != nil {
+		return umsg, fmt.Errorf("addMessage: %v", err)
+	}
+	return umsg, nil
+}
+
 /*
-func GetUserMessages() models.UserMessages {
-
-}
-
-func AddMessage() {
-	// TODO: Add to Database
-	fmt.Println("Adding data...")
-}
 
 func AddUserMessage() {
 

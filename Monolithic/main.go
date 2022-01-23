@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	dt "monolithicdemo/data"
+	"monolithicdemo/models"
 	"net/http"
 	"os"
 )
@@ -54,8 +56,20 @@ func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
-	//	addData()
-	helloRunHandler(w, r)
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+	message := r.Form.Get("message")
+
+	umsg, _ := dt.AddMessage(models.UserMessage{
+		UserId:    "alvardev",
+		MessageId: 0,
+		Message:   message,
+	})
+	fmt.Println(umsg)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {

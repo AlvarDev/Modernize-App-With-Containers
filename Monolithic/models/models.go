@@ -2,7 +2,7 @@ package models
 
 type UserMessage struct {
 	UserId    string `json:"userId"`
-	MessageId int    `json:"messageId"`
+	MessageId int64  `json:"messageId"`
 	Message   string `json:"message"`
 }
 
