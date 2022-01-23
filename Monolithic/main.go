@@ -1,20 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
+	dt "monolithicdemo/data"
 	"net/http"
 	"os"
 )
-
-type todo struct {
-	Message string
-}
-
-type Todos struct {
-	List []todo
-}
 
 // Variables used to generate the HTML page.
 var (
@@ -53,7 +45,9 @@ func main() {
 
 // helloRunHandler responds to requests by rendering an HTML page.
 func helloRunHandler(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.Execute(w, getData()); err != nil {
+
+	data, _ := dt.GetMessages()
+	if err := tmpl.Execute(w, data); err != nil {
 		msg := http.StatusText(http.StatusInternalServerError)
 		log.Printf("template.Execute: %v", err)
 		http.Error(w, msg, http.StatusInternalServerError)
@@ -61,40 +55,12 @@ func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
-	addData()
+	//	addData()
 	helloRunHandler(w, r)
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
-	deleteData()
+	//	deleteData()
 	helloRunHandler(w, r)
 
-}
-
-/***********************
-* Helpers
-***********************/
-
-func getData() Todos {
-	// TODO: Get from database
-	return Todos{
-		List: []todo{
-			{
-				Message: "Hello",
-			},
-			{
-				Message: "World",
-			},
-		},
-	}
-}
-
-func addData() {
-	// TODO: Add to Database
-	fmt.Println("Adding data...")
-}
-
-func deleteData() {
-	// TODO: Delete from Database
-	fmt.Println("Deleting data...")
 }
