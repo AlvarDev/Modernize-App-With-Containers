@@ -50,7 +50,7 @@
 		<br><br>
 		<h1>Say Hi!</h1>
 		<br><br>
-		<form action="#">
+		<form action="/add">
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			  <input class="mdl-textfield__input" type="text" id="sample3">
 			  <label class="mdl-textfield__label" for="sample3">Message...</label>
@@ -64,33 +64,23 @@
 		<br><br>
 
 		<section>
-			<form action="#">
-				<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
-					<div class="mdl-card__supporting-text">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-					Mauris sagittis pellentesque lacus eleifend lacinia...
+			{{ with .List }}
+				{{ range . }}
+				<form action="/delete">
+					<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
+						<div class="mdl-card__supporting-text">
+						{{.Message}}
+						</div>
+						<div class="mdl-card__actions mdl-card--border">
+						<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+							Delete
+						</button>
+						</div>
 					</div>
-					<div class="mdl-card__actions mdl-card--border">
-					<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-						Delete
-					</a>
-					</div>
-				</div>
-			</form>
-			<br>
-			<form action="#">
-				<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
-					<div class="mdl-card__supporting-text">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-					Mauris sagittis pellentesque lacus eleifend lacinia...
-					</div>
-					<div class="mdl-card__actions mdl-card--border">
-					<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-						Delete
-					</a>
-					</div>
-				</div>
-			</form>
+				</form>
+				<br>
+				{{ end }} 
+			{{ end }}
 		</section>  
 	  </main>
 	</div>
