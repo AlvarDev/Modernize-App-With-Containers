@@ -76,9 +76,8 @@ func GetMessages(userid string) (models.UserMessages, error) {
 func AddMessage(umsg models.UserMessage) (models.UserMessage, error) {
 	db := getConnection()
 	defer db.Close()
-	//var lastID int
 
-	res, err := db.Query("CALL AddUserMessage(?, ?)", umsg.UserId, umsg.Message)
+	res, err := db.Query("CALL AddUserMessage(?, ?);", umsg.UserId, umsg.Message)
 	if err != nil {
 		return umsg, err
 	}
@@ -90,30 +89,11 @@ func AddMessage(umsg models.UserMessage) (models.UserMessage, error) {
 	return umsg, nil
 }
 
-/*
-
-func AddUserMessage() {
-
-}
-
-func UpdateUserMessage() {
-
-}
-
-func DeleteUserMessage() {
-		db := getConnection()
+func DeleteMessage(userId, messageId string) error {
+	db := getConnection()
 	defer db.Close()
 
-	result, err := db.Exec("CALL AddUserMessage(?,?)", umsg.UserId, umsg.Message)
-	if err != nil {
-		return umsg, fmt.Errorf("addMessage: %v", err)
-	}
+	_, err := db.Exec("CALL DeleteUserMessage(?, ?);", userId, messageId)
 
-	umsg.MessageId, err = result.LastInsertId()
-	if err != nil {
-		return umsg, fmt.Errorf("addMessage: %v", err)
-	}
-	return umsg, nil
+	return err
 }
-
-*/

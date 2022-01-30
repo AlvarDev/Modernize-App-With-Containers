@@ -56,7 +56,6 @@ func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
-
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatal(err)
@@ -72,12 +71,18 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	//	fmt.Println(umsg)
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
-	//	deleteData()
-	//helloRunHandler(w, r)
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	messageId := r.Form.Get("messageId")
+	_ = dt.DeleteMessage("alvardev", messageId)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
