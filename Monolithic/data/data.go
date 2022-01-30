@@ -49,6 +49,7 @@ func GetMessages(userid string) (models.UserMessages, error) {
 	defer db.Close()
 
 	messages := models.UserMessages{}
+
 	rows, err := db.Query("CALL GetUserMessages(?);", userid)
 	if err != nil {
 		return messages, fmt.Errorf("message: %v", err)
@@ -75,16 +76,17 @@ func GetMessages(userid string) (models.UserMessages, error) {
 func AddMessage(umsg models.UserMessage) (models.UserMessage, error) {
 	db := getConnection()
 	defer db.Close()
+	//var lastID int
 
-	result, err := db.Exec("CALL AddUserMessage(?,?)", umsg.UserId, umsg.Message)
+	res, err := db.Query("CALL AddUserMessage(?, ?)", umsg.UserId, umsg.Message)
 	if err != nil {
-		return umsg, fmt.Errorf("addMessage: %v", err)
+		return umsg, err
 	}
+	defer res.Close()
 
-	umsg.MessageId, err = result.LastInsertId()
-	if err != nil {
-		return umsg, fmt.Errorf("addMessage: %v", err)
-	}
+	res.Next()
+	res.Scan(&umsg.MessageId)
+
 	return umsg, nil
 }
 
@@ -99,8 +101,19 @@ func UpdateUserMessage() {
 }
 
 func DeleteUserMessage() {
-	// TODO: Delete from Database
-	fmt.Println("Deleting data...")
+		db := getConnection()
+	defer db.Close()
+
+	result, err := db.Exec("CALL AddUserMessage(?,?)", umsg.UserId, umsg.Message)
+	if err != nil {
+		return umsg, fmt.Errorf("addMessage: %v", err)
+	}
+
+	umsg.MessageId, err = result.LastInsertId()
+	if err != nil {
+		return umsg, fmt.Errorf("addMessage: %v", err)
+	}
+	return umsg, nil
 }
 
 */

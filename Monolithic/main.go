@@ -63,17 +63,21 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	message := r.Form.Get("message")
 
-	umsg, _ := dt.AddMessage(models.UserMessage{
+	_, err = dt.AddMessage(models.UserMessage{
 		UserId:    "alvardev",
 		MessageId: 0,
 		Message:   message,
 	})
-	fmt.Println(umsg)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	//	fmt.Println(umsg)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	//	deleteData()
-	helloRunHandler(w, r)
+	//helloRunHandler(w, r)
 
 }

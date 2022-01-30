@@ -32,6 +32,7 @@ DELIMITER //
 CREATE PROCEDURE AddUserMessage(IN in_userid VARCHAR(30), IN in_message VARCHAR(250))
 BEGIN
 	insert into usermessages (userid, message) values  (in_userid, in_message);
+	SELECT LAST_INSERT_ID();
 END //
 
 DELIMITER ;
