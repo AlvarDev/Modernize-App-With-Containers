@@ -3,38 +3,62 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
-	pb "mymessagesapigateway/pb"
-
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
+
+const (
+	port = "8080"
+)
+
+type frontendServer struct {
+	listSvcAddr string
+	listSvcConn *grpc.ClientConn
+
+	addSvcAddr string
+	addSvcConn *grpc.ClientConn
+
+	updateSvcAddr string
+	updateSvcConn *grpc.ClientConn
+
+	deleteSvcAddr string
+	deleteSvcConn *grpc.ClientConn
+}
 
 func main() {
 
-	domain := "localhost"
-	port := "50051"
-	host := domain + ":" + port
+	ctx := context.Background()
+	svc := new(frontendServer)
 
-	conn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		// return nil, fmt.Errorf("did not connect: %v", err)
-		fmt.Errorf("did not connect: %v", err)
+	mustMapEnv(&svc.listSvcAddr, "LIST_SERVICE_ADDR")
+
+	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
+
+	messages, _ := svc.listMessages(ctx)
+
+	fmt.Println("********************")
+	fmt.Println(messages)
+
+}
+
+func mustMapEnv(target *string, envKey string) {
+	v := os.Getenv(envKey)
+	if v == "" {
+		panic(fmt.Sprintf("environment variable %q not set", envKey))
 	}
-	defer conn.Close()
+	*target = v
+}
 
-	// Create client
-	client := pb.NewMyMessageServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+func mustConnGRPC(ctx context.Context, conn **grpc.ClientConn, addr string) {
+	var err error
+	ctx, cancel := context.WithTimeout(ctx, time.Second*3)
 	defer cancel()
-
-	r, err := client.ListMessages(ctx, &pb.ListMyMessagesRequest{})
+	*conn, err = grpc.DialContext(ctx, addr,
+		grpc.WithInsecure())
 	if err != nil {
-		fmt.Println("Da faq")
-		fmt.Println(err)
+		panic(errors.Wrapf(err, "grpc: failed to connect %s", addr))
 	}
-
-	fmt.Println(r.GetMyMessages())
-
 }
