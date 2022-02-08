@@ -3,10 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
+	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
+	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+	"go.opencensus.io/plugin/ochttp"
 	"google.golang.org/grpc"
 )
 
@@ -37,10 +42,19 @@ func main() {
 
 	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
 
-	messages, _ := svc.listMessages(ctx)
+	r := mux.NewRouter()
+	r.HandleFunc("/", svc.listMessagesHandler).Methods(http.MethodGet)
 
-	fmt.Println("********************")
-	fmt.Println(messages)
+	httpHandler := &ochttp.Handler{
+		Propagation: &propagation.HTTPFormat{},
+		Handler:     r,
+	}
+
+	log.Info().Msg("Starting manager service")
+
+	if err := http.ListenAndServe(":8080", httpHandler); err != nil {
+		log.Fatal().Err(err).Msg("Can’t start service")
+	}
 
 }
 
