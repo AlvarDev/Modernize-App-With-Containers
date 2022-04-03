@@ -33,9 +33,9 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterMyMessageServiceServer(s, &server{})
-	fmt.Println("server listening at: %v: ", lis.Addr())
+	fmt.Printf("server listening at: %v\n", lis.Addr())
 	if err := s.Serve(lis); err != nil {
-		fmt.Println("failed to serve: %v:", err)
+		fmt.Printf("failed to serve: %v", err)
 	}
 
 }

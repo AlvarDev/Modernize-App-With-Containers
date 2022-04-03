@@ -39,11 +39,14 @@ func main() {
 	svc := new(frontendServer)
 
 	mustMapEnv(&svc.listSvcAddr, "LIST_SERVICE_ADDR")
+	mustMapEnv(&svc.addSvcAddr, "ADD_SERVICE_ADDR")
 
 	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
+	mustConnGRPC(ctx, &svc.addSvcConn, svc.addSvcAddr)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.listMessagesHandler).Methods(http.MethodGet)
+	r.HandleFunc("/add", svc.addMessageHandler).Methods(http.MethodPost)
 
 	httpHandler := &ochttp.Handler{
 		Propagation: &propagation.HTTPFormat{},

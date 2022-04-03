@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+metadata:
+  name: microservice
+build:
+  artifacts:
+  - image: gcr.io/architect-demos/add-services
+    context: add
+    docker:
+      dockerfile: Dockerfile
+  - image: gcr.io/architect-demos/apigateway-services
+    context: apigateway
+    docker:
+      dockerfile: Dockerfile
+  - image: gcr.io/architect-demos/list-services
+    context: list
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - add/addservice.yaml
+    - apigateway/apigateway.yaml
+    - list/listservice.yaml
