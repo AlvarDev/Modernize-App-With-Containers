@@ -53,8 +53,8 @@
 		<br><br>
 		<form action="/add">
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-			  <input class="mdl-textfield__input" type="text" id="message" name="message" autocomplete="off" required>
-			  <label class="mdl-textfield__label" for="sample3">Message...</label>
+			  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" required>
+			  <label class="mdl-textfield__label" for="sample3">Remainder...</label>
 			</div>
 			&nbsp;	&nbsp;	&nbsp;
 			<!-- Colored FAB button with ripple -->
@@ -72,7 +72,7 @@
 							<div class="mdl-card__supporting-text">
 								{{.GetRemainder }}
 							</div>
-							<input type="hidden" name="messageId" value="{{ .GetRemainderId }}">
+							<input type="hidden" name="remainderId" value="{{ .GetRemainderId }}">
 							<div class="mdl-card__actions mdl-card--border">
 								<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
 									Delete

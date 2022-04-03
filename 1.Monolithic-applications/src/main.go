@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	pb "monolithicapp/pb"
 	"net/http"
 	"os"
 	"text/template"
@@ -19,8 +20,8 @@ func main() {
 
 	// Define HTTP server.
 	http.HandleFunc("/", helloRunHandler)
-	// http.HandleFunc("/add", addHandler)
-	// http.HandleFunc("/delete", deleteHandler)
+	http.HandleFunc("/add", addHandler)
+	http.HandleFunc("/delete", deleteHandler)
 
 	fs := http.FileServer(http.Dir("./assets"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
@@ -46,7 +47,8 @@ func main() {
 // helloRunHandler responds to requests by rendering an HTML page.
 func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 
-	data, err := ListRemainders("")
+	// Setting userUID because there is not Firebase Auth at this point
+	data, err := ListRemainders("no-user")
 	if err != nil {
 		msg := http.StatusText(http.StatusInternalServerError)
 		log.Printf("Getting firestore data: %v", err)
@@ -61,18 +63,17 @@ func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*
 func addHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	message := r.Form.Get("message")
 
-	_, err = dt.AddMessage(models.UserMessage{
-		UserId:    "alvardev",
-		MessageId: 0,
-		Message:   message,
+	// Setting userUID because there is not Firebase Auth at this point
+	remainder := r.Form.Get("remainder")
+	_, _ = AddRemainder(&pb.Remainder{
+		Remainder: remainder,
+		UserUID:   "no-user",
 	})
 
 	if err != nil {
@@ -88,13 +89,17 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	messageId := r.Form.Get("messageId")
-	_ = dt.DeleteMessage("alvardev", messageId)
+	remainderId := r.Form.Get("remainderId")
+	err = DeleteRemainder(&pb.Remainder{
+		RemainderId: remainderId,
+		UserUID:     "no-user",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-
-*/
 
 func mustMapEnv(target *string, envKey string) {
 	v := os.Getenv(envKey)

@@ -21,7 +21,7 @@ message Remainder {
 	string remainderId = 1;
 	string remainder = 2;
 	string userUID = 3;
-	google.protobuf.Timestamp remainderTime = 4;
+	google.protobuf.Timestamp createdAt= 4;
 }
 
 

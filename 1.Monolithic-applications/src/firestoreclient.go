@@ -5,6 +5,8 @@ import (
 	"log"
 	pb "monolithicapp/pb"
 
+	ts "google.golang.org/protobuf/types/known/timestamppb"
+
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"
 )
@@ -22,6 +24,33 @@ func createClient(ctx context.Context) *firestore.Client {
 	return client
 }
 
+func AddRemainder(remainder *pb.Remainder) (*pb.Remainder, error) {
+	// Get a Firestore client.
+	ctx := context.Background()
+	client := createClient(ctx)
+	defer client.Close()
+
+	remainder.CreatedAt = ts.Now()
+	doc, _, err := client.Collection("appmod/"+remainder.GetUserUID()+"/remainders").Add(ctx, remainder)
+	if err != nil {
+		log.Fatalf("Failed adding remainder: %v", err)
+		return nil, err
+	}
+
+	remainder.RemainderId = doc.ID
+	return remainder, nil
+}
+
+func DeleteRemainder(remainder *pb.Remainder) error {
+	// Get a Firestore client.
+	ctx := context.Background()
+	client := createClient(ctx)
+	defer client.Close()
+
+	_, err := client.Doc("appmod/" + remainder.GetUserUID() + "/remainders/" + remainder.GetRemainderId()).Delete(ctx)
+	return err
+}
+
 func ListRemainders(userUID string) (*pb.ListRemaindersResponse, error) {
 
 	// Get a Firestore client.
@@ -30,7 +59,10 @@ func ListRemainders(userUID string) (*pb.ListRemaindersResponse, error) {
 	defer client.Close()
 
 	var rms []*pb.Remainder
-	remaindersIter := client.Collection("remainders").Documents(ctx)
+	remaindersIter := client.
+		Collection("appmod/"+userUID+"/remainders").
+		OrderBy("CreatedAt", firestore.Asc).
+		Documents(ctx)
 
 	for {
 
@@ -45,6 +77,7 @@ func ListRemainders(userUID string) (*pb.ListRemaindersResponse, error) {
 
 		remainder := &pb.Remainder{}
 		doc.DataTo(&remainder)
+		remainder.RemainderId = doc.Ref.ID
 		rms = append(rms, remainder)
 	}
 
