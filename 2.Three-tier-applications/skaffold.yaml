@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+metadata:
+  name: -.three-tier-applications
+build:
+  artifacts:
+  - image: backendservice
+    context: src/backend
+    docker:
+      dockerfile: Dockerfile
+  - image: frontend
+    context: src/frontend
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes-manifests/backendservice.yaml
+    - kubernetes-manifests/frontendservice.yaml

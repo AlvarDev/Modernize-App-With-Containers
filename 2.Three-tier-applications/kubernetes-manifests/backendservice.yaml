@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backendservice
+spec:
+  selector:
+    matchLabels:
+      app: backendservice
+  template:
+    metadata:
+      labels:
+        app: backendservice
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: backendservice
+          ports:
+          - containerPort: 50052
+          env:
+          - name: PROJECT_ID
+            value: "architect-demos"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice
+spec:
+  type: ClusterIP
+  selector:
+    app: backendservice
+  ports:
+  - name: grpc
+    port: 50052
+    targetPort: 50052
