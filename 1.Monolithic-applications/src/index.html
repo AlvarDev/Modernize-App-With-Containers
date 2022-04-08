@@ -3,7 +3,7 @@
 <head>
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A Monolithic Application</title>
+<title>1.Monolithic-applications</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -65,14 +65,14 @@
 		<br><br>
 
 		<section>
-			{{ with .GetRemainders }}
+			{{ with . }}
 				{{ range . }}
 					<form action="/delete">
 						<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
 							<div class="mdl-card__supporting-text">
 								{{.GetRemainder }}
 							</div>
-							<input type="hidden" name="remainderId" value="{{ .GetRemainderId }}">
+							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
 							<div class="mdl-card__actions mdl-card--border">
 								<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
 									Delete

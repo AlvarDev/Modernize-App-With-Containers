@@ -37,7 +37,7 @@ func AddRemainder(remainder *pb.Remainder) (*pb.Remainder, error) {
 		return nil, err
 	}
 
-	remainder.RemainderId = doc.ID
+	remainder.RemainderID = doc.ID
 	return remainder, nil
 }
 
@@ -47,11 +47,11 @@ func DeleteRemainder(remainder *pb.Remainder) error {
 	client := createClient(ctx)
 	defer client.Close()
 
-	_, err := client.Doc("appmod/" + remainder.GetUserUID() + "/remainders/" + remainder.GetRemainderId()).Delete(ctx)
+	_, err := client.Doc("appmod/" + remainder.GetUserUID() + "/remainders/" + remainder.GetRemainderID()).Delete(ctx)
 	return err
 }
 
-func ListRemainders(userUID string) (*pb.ListRemaindersResponse, error) {
+func ListRemainders(userUID string) ([]*pb.Remainder, error) {
 
 	// Get a Firestore client.
 	ctx := context.Background()
@@ -77,9 +77,9 @@ func ListRemainders(userUID string) (*pb.ListRemaindersResponse, error) {
 
 		remainder := &pb.Remainder{}
 		doc.DataTo(&remainder)
-		remainder.RemainderId = doc.Ref.ID
+		remainder.RemainderID = doc.Ref.ID
 		rms = append(rms, remainder)
 	}
 
-	return &pb.ListRemaindersResponse{Remainders: rms}, nil
+	return rms, nil
 }
