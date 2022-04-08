@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "remianders/protos";
+
+package remainderprotos;
+
+service ReminderService {
+
+	rpc AddRemainder(AddRemainderRequest) returns (AddRemainderResponse);
+	
+	rpc DeleteRemainder(DeleteRemainderRequest) returns (DeleteRemainderResponse);
+
+	rpc ListRemainders(ListRemaindersRequest) returns (ListRemaindersResponse);
+
+	rpc UpdateRemainder(UpdateRemainderRequest) returns (UpdateRemainderResponse);
+}
+
+message Remainder {
+	string remainderID = 1;
+	string remainder = 2;
+	string userUID = 3;
+	google.protobuf.Timestamp createdAt= 4;
+}
+
+
+
+message AddRemainderRequest {
+	Remainder remainder = 1;
+}
+
+message AddRemainderResponse {
+	Remainder remainder = 1;
+}
+
+message DeleteRemainderRequest {
+	Remainder remainder = 1;
+}
+
+message DeleteRemainderResponse {
+	string remainderID = 1;
+}
+
+message ListRemaindersRequest {
+	string userUID = 1;
+}
+
+message ListRemaindersResponse {
+	repeated Remainder remainders = 1;
+}
+
+message UpdateRemainderRequest {
+	Remainder remainder = 1;
+}
+
+message UpdateRemainderResponse {
+	Remainder remainder = 2;
+}

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: updateservice
+spec:
+  selector:
+    matchLabels:
+      app: updateservice
+  template:
+    metadata:
+      labels:
+        app: updateservice
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: updateservice
+          ports:
+          - containerPort: 50053
+          env:
+          - name: PROJECT_ID
+            value: "architect-demos"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: updateservice
+spec:
+  type: ClusterIP
+  selector:
+    app: updateservice
+  ports:
+  - name: grpc
+    port: 50053
+    targetPort: 50053

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4.Microservices-with-api-gateway</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<script type="text/javascript">
+	
+	function showEdit(remainderID){
+		document.getElementById(remainderID + "-form").style.display = "inline-block";
+		document.getElementById(remainderID + "-edit").style.opacity = "0";
+		document.getElementById(remainderID + "-edit").disabled = true;
+	}
+
+</script>
+</head>
+<body>
+	<!-- Uses a transparent header that draws on top of the layout's background -->
+<style>
+	.demo-layout-transparent {
+	  background: url('https://storage.cloud.google.com/architect-demos-images/profile_header1.png') bottom no-repeat;
+	}
+	.demo-layout-transparent .mdl-layout__header,
+	.demo-layout-transparent .mdl-layout__drawer-button {
+	  /* This background is dark, so we set text to white. Use 87% black instead if
+		 your background is light. */
+	  color: white;
+	}
+
+	h1 {
+		margin: 0px auto;
+		text-align: center;
+	}
+	.demo-card-wide.mdl-card {
+		width: 512px;
+		min-height: 100px;
+	}
+	.demo-card-wide > .mdl-card__title {
+		color: #fff;
+	}
+	.demo-card-wide > .mdl-card__menu {
+		color: #fff;
+	}
+
+	section {
+		width: 90%;
+		margin: 0px auto;
+		text-align: center;
+	}
+</style>
+	
+	<div class="demo-layout-transparent mdl-layout mdl-js-layout">
+	  <main class="mdl-layout__content" style="text-align: center;">
+		<br><br>
+		<h1>Leave a message!</h1>
+		<br><br>
+		<form action="/add">
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" required>
+			  <label class="mdl-textfield__label" for="sample3">Remainder...</label>
+			</div>
+			&nbsp;	&nbsp;	&nbsp;
+			<!-- Colored FAB button with ripple -->
+			<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+				<i class="material-icons">add</i>
+			</button>
+		</form>
+		<br><br>
+
+		<section>
+			{{ with .GetRemainders }}
+				{{ range . }}
+					<form action="/delete" style="display: inline-block;">
+						<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
+							<div class="mdl-card__supporting-text">
+								{{.GetRemainder }}
+							</div>
+							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
+							<div class="mdl-card__actions mdl-card--border" style="display: inline-block;">
+								<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+									Delete
+								</button>
+							</div>
+						</div>
+					</form>
+					<div id="{{ .GetRemainderID }}-edit" class="mdl-card__actions mdl-card--border" style="display: inline-block; vertical-align: top; width: 1%;">
+						<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="showEdit('{{ .GetRemainderID }}')">
+							<i class="material-icons">edit</i>
+						</button>
+					</div>
+					<br><br>
+					<form id="{{ .GetRemainderID }}-form" action="/update" style="display: none;">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
+						  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" value="{{.GetRemainder }}" required>
+						  <label class="mdl-textfield__label" for="sample3">Remainder...</label>
+						</div>
+						&nbsp;	&nbsp;	&nbsp;
+						<!-- Colored FAB button with ripple -->
+						<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" >
+							<i class="material-icons">save</i>
+						</button>
+					</form>
+					<br><br>
+				{{ end }}
+			{{ end }}
+		</section>  
+	  </main>
+	</div>
+</body>
+</html>
