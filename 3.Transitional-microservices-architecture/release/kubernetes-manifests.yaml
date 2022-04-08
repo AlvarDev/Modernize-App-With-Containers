@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backendservice
+spec:
+  selector:
+    matchLabels:
+      app: backendservice
+  template:
+    metadata:
+      labels:
+        app: backendservice
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: gcr.io/architect-demos/backendservice:v3.0
+          ports:
+          - containerPort: 50052
+          env:
+          - name: PROJECT_ID
+            value: "architect-demos"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice
+spec:
+  type: ClusterIP
+  selector:
+    app: backendservice
+  ports:
+  - name: grpc
+    port: 50052
+    targetPort: 50052
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: gcr.io/architect-demos/frontend:v3.0
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+          - name: BACKEND_SERVICE_ADDR
+            value: "backendservice:50052"
+          - name: UPDATE_SERVICE_ADDR
+            value: "updateservice:50053"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: updateservice
+spec:
+  selector:
+    matchLabels:
+      app: updateservice
+  template:
+    metadata:
+      labels:
+        app: updateservice
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: gcr.io/architect-demos/updateservice:v3.0
+          ports:
+          - containerPort: 50053
+          env:
+          - name: PROJECT_ID
+            value: "architect-demos"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: updateservice
+spec:
+  type: ClusterIP
+  selector:
+    app: updateservice
+  ports:
+  - name: grpc
+    port: 50053
+    targetPort: 50053
