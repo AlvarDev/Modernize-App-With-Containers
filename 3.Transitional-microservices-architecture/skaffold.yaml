@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+metadata:
+  name: -.transitional-microservices-architecture
+build:
+  artifacts:
+  - image: backendservice
+    context: src/backend
+    docker:
+      dockerfile: Dockerfile
+  - image: frontend
+    context: src/frontend
+    docker:
+      dockerfile: Dockerfile
+  - image: updateservice
+    context: src/updateservice
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes-manifests/backendservice.yaml
+    - kubernetes-manifests/frontendservice.yaml
+    - kubernetes-manifests/updateservice.yaml
