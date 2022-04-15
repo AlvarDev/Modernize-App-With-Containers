@@ -44,9 +44,9 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.rootHandler).Methods(http.MethodGet)
-	r.HandleFunc("/add", svc.addHandler)
-	r.HandleFunc("/delete", svc.deleteHandler)
-	r.HandleFunc("/update", svc.updateHandler)
+	r.HandleFunc("/add", svc.addHandler).Methods(http.MethodPost)
+	r.HandleFunc("/delete", svc.deleteHandler).Methods(http.MethodGet)
+	r.HandleFunc("/update", svc.updateHandler).Methods(http.MethodPost)
 
 	httpHandler := &ochttp.Handler{
 		Propagation: &propagation.HTTPFormat{},

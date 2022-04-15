@@ -59,7 +59,7 @@
 		<br><br>
 		<h1>Leave a message!</h1>
 		<br><br>
-		<form action="/add">
+		<form action="/add" method="post">
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" required>
 			  <label class="mdl-textfield__label" for="sample3">Remainder...</label>
@@ -94,7 +94,7 @@
 						</button>
 					</div>
 					<br><br>
-					<form id="{{ .GetRemainderID }}-form" action="/update" style="display: none;">
+					<form id="{{ .GetRemainderID }}-form" action="/update" method="post" style="display: none;">
 						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
 						  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" value="{{.GetRemainder }}" required>

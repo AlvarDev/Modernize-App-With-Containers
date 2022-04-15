@@ -38,7 +38,7 @@ func (fe *frontendServer) addHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Setting userUID because there is not Firebase Auth at this point
-	remainder := r.Form.Get("remainder")
+	remainder := r.PostForm.Get("remainder")
 	_, err = fe.addRemainder(r.Context(),
 		&pb.AddRemainderRequest{
 			Remainder: &pb.Remainder{
@@ -82,8 +82,8 @@ func (fe *frontendServer) updateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Setting userUID because there is not Firebase Auth at this point
-	remainderID := r.Form.Get("remainderID")
-	remainder := r.Form.Get("remainder")
+	remainderID := r.PostForm.Get("remainderID")
+	remainder := r.PostForm.Get("remainder")
 	_, err = fe.updateRemainder(r.Context(),
 		&pb.UpdateRemainderRequest{
 			Remainder: &pb.Remainder{

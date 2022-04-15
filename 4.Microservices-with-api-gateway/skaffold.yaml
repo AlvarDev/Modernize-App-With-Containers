@@ -16,6 +16,10 @@ build:
     context: src/frontend
     docker:
       dockerfile: Dockerfile
+  - image: loadgenerator
+    context: src/loadgenerator
+    docker:
+      dockerfile: Dockerfile
   - image: updateservice
     context: src/updateservice
     docker:
@@ -26,4 +30,6 @@ deploy:
     - kubernetes-manifests/addservice.yaml
     - kubernetes-manifests/backendservice.yaml
     - kubernetes-manifests/frontendservice.yaml
+    - kubernetes-manifests/loadgenerator.yaml
     - kubernetes-manifests/updateservice.yaml
+
