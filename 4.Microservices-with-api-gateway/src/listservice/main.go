@@ -1,12 +1,13 @@
 package main
 
 import (
-	pb "addservice/pb"
 	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
+
+	pb "listservice/pb"
 
 	"google.golang.org/grpc"
 )
@@ -19,9 +20,9 @@ type server struct {
 	pb.UnimplementedReminderServiceServer
 }
 
-func (s *server) AddRemainder(ctx context.Context, req *pb.AddRemainderRequest) (*pb.AddRemainderResponse, error) {
-	newRemainder, err := AddRemainder(req.GetRemainder())
-	return &pb.AddRemainderResponse{Remainder: newRemainder}, err
+func (s *server) ListRemainders(ctx context.Context, req *pb.ListRemaindersRequest) (*pb.ListRemaindersResponse, error) {
+	remainders, err := ListRemainders(req.GetUserUID())
+	return &pb.ListRemaindersResponse{Remainders: remainders}, err
 }
 
 func main() {

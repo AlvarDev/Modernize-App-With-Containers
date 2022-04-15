@@ -24,10 +24,10 @@ spec:
             value: "8080"
           - name: BACKEND_SERVICE_ADDR
             value: "backendservice:50052"
+          - name: LIST_SERVICE_ADDR
+            value: "listservice:50054"
           - name: UPDATE_SERVICE_ADDR
             value: "updateservice:50053"
-          - name: ADD_SERVICE_ADDR
-            value: "addservice:50054"
           resources:
             requests:
               cpu: 100m

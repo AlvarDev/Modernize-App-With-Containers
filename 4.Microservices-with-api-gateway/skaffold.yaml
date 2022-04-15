@@ -4,16 +4,16 @@ metadata:
   name: -.microservices-with-api-gateway
 build:
   artifacts:
-  - image: addservice
-    context: src/addservice
-    docker:
-      dockerfile: Dockerfile
   - image: backendservice
     context: src/backend
     docker:
       dockerfile: Dockerfile
   - image: frontend
     context: src/frontend
+    docker:
+      dockerfile: Dockerfile
+  - image: listservice
+    context: src/listservice
     docker:
       dockerfile: Dockerfile
   - image: loadgenerator
@@ -27,9 +27,8 @@ build:
 deploy:
   kubectl:
     manifests:
-    - kubernetes-manifests/addservice.yaml
     - kubernetes-manifests/backendservice.yaml
     - kubernetes-manifests/frontendservice.yaml
+    - kubernetes-manifests/listservice.yaml
     - kubernetes-manifests/loadgenerator.yaml
     - kubernetes-manifests/updateservice.yaml
-

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: addservice
+  name: listservice
 spec:
   selector:
     matchLabels:
-      app: addservice
+      app: listservice
   template:
     metadata:
       labels:
-        app: addservice
+        app: listservice
     spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: addservice
+          image: listservice
           ports:
           - containerPort: 50054
           env:
@@ -31,11 +31,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: addservice
+  name: listservice
 spec:
   type: ClusterIP
   selector:
-    app: addservice
+    app: listservice
   ports:
   - name: grpc
     port: 50054

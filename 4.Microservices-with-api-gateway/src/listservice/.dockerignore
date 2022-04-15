@@ -3,8 +3,7 @@
 *.exe~
 *.dll
 *.so
-*.dylibi
-*.swp
+*.dylib
 
 # Test binary, built with `go test -c`
 *.test
@@ -15,4 +14,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-addservice
+# Vim temps
+*.swp
+
+# Go builds
+listservice
+
+# SO tmp files
+.DS_Store

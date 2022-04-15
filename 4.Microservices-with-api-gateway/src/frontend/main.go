@@ -20,11 +20,11 @@ const (
 )
 
 type frontendServer struct {
-	addSvcAddr string
-	addSvcConn *grpc.ClientConn
-
 	backendSvcAddr string
 	backendSvcConn *grpc.ClientConn
+
+	listSvcAddr string
+	listSvcConn *grpc.ClientConn
 
 	updateSvcAddr string
 	updateSvcConn *grpc.ClientConn
@@ -35,11 +35,11 @@ func main() {
 	ctx := context.Background()
 	svc := new(frontendServer)
 
-	mustMapEnv(&svc.addSvcAddr, "ADD_SERVICE_ADDR")
 	mustMapEnv(&svc.backendSvcAddr, "BACKEND_SERVICE_ADDR")
+	mustMapEnv(&svc.listSvcAddr, "LIST_SERVICE_ADDR")
 	mustMapEnv(&svc.updateSvcAddr, "UPDATE_SERVICE_ADDR")
-	mustConnGRPC(ctx, &svc.addSvcConn, svc.addSvcAddr)
 	mustConnGRPC(ctx, &svc.backendSvcConn, svc.backendSvcAddr)
+	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
 	mustConnGRPC(ctx, &svc.updateSvcConn, svc.updateSvcAddr)
 
 	r := mux.NewRouter()

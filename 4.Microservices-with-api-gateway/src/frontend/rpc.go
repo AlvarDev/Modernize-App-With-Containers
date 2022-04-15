@@ -6,7 +6,7 @@ import (
 )
 
 func (fe *frontendServer) addRemainder(ctx context.Context, req *pb.AddRemainderRequest) (*pb.AddRemainderResponse, error) {
-	return pb.NewReminderServiceClient(fe.addSvcConn).AddRemainder(ctx, req)
+	return pb.NewReminderServiceClient(fe.backendSvcConn).AddRemainder(ctx, req)
 }
 
 func (fe *frontendServer) deleteRemainder(ctx context.Context, req *pb.DeleteRemainderRequest) (*pb.DeleteRemainderResponse, error) {
@@ -14,7 +14,7 @@ func (fe *frontendServer) deleteRemainder(ctx context.Context, req *pb.DeleteRem
 }
 
 func (fe *frontendServer) listRemainders(ctx context.Context, req *pb.ListRemaindersRequest) (*pb.ListRemaindersResponse, error) {
-	return pb.NewReminderServiceClient(fe.backendSvcConn).ListRemainders(ctx, req)
+	return pb.NewReminderServiceClient(fe.listSvcConn).ListRemainders(ctx, req)
 }
 
 func (fe *frontendServer) updateRemainder(ctx context.Context, req *pb.UpdateRemainderRequest) (*pb.UpdateRemainderResponse, error) {
