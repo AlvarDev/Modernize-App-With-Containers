@@ -32,14 +32,14 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: gcr.io/architect-demos/monolothicapp:v1.0
+          image: gcr.io/YOUR_PROJECT_ID/monolothicapp:v1.0
           ports:
           - containerPort: 8080
           env:
           - name: PORT
             value: "8080"
           - name: PROJECT_ID
-            value: "architect-demos"
+            value: "YOUR_PROJECT_ID"
           resources:
             requests:
               cpu: 100m
