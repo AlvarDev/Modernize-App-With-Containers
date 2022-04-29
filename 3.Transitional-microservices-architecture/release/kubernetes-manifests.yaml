@@ -11,7 +11,7 @@ spec:
       labels:
         app: backendservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: appmod-ksa
       containers:
         - name: server
           image: gcr.io/YOUR_PROJECT_ID/backendservice:v3.1
@@ -56,7 +56,7 @@ spec:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
-      serviceAccountName: default
+      serviceAccountName: appmod-ksa
       containers:
         - name: server
           image: gcr.io/YOUR_PROJECT_ID/frontend:v3.0
@@ -116,7 +116,7 @@ spec:
       labels:
         app: updateservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: appmod-ksa
       containers:
         - name: server
           image: gcr.io/YOUR_PROJECT_ID/updateservice:v3.0

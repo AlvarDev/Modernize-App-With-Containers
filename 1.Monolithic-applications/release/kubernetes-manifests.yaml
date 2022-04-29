@@ -29,7 +29,7 @@ spec:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
-      serviceAccountName: default
+      serviceAccountName: appmod-ksa
       containers:
         - name: server
           image: gcr.io/YOUR_PROJECT_ID/monolothicapp:v1.0
