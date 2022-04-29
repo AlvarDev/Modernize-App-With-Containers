@@ -62,6 +62,7 @@ func ListRemainders(userUID string) ([]*pb.Remainder, error) {
 	remaindersIter := client.
 		Collection("appmod/"+userUID+"/remainders").
 		OrderBy("CreatedAt", firestore.Asc).
+		Limit(30).
 		Documents(ctx)
 
 	for {

@@ -12,8 +12,13 @@ build:
     context: src/frontend
     docker:
       dockerfile: Dockerfile
+  - image: loadgenerator
+    context: src/loadgenerator
+    docker:
+      dockerfile: Dockerfile
 deploy:
   kubectl:
     manifests:
     - kubernetes-manifests/backendservice.yaml
     - kubernetes-manifests/frontendservice.yaml
+    - kubernetes-manifests/loadgenerator.yaml
