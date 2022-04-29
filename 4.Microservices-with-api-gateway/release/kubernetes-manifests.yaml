@@ -14,7 +14,7 @@ spec:
       serviceAccountName: appmod-ksa
       containers:
         - name: server
-          image: gcr.io/YOUR_PROJECT_ID/listservice:v4.0
+          image: gcr.io/YOUR_PROJECT_ID/listservice:v4.1
           ports:
           - containerPort: 50054
           env:
