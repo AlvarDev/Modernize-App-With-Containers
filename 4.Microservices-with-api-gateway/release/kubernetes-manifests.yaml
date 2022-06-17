@@ -1,6 +1,70 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: apigarteway
+spec:
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      labels:
+        app: apigateway
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: gcr.io/YOUR_PROJECT_ID/apigatewayservice:v4.0
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+          - name: BACKEND_SERVICE_ADDR
+            value: "backendservice:50052"
+          - name: LIST_SERVICE_ADDR
+            value: "listservice:50054"
+          - name: UPDATE_SERVICE_ADDR
+            value: "updateservice:50053"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+spec:
+  type: ClusterIP
+  selector:
+    app: apigateway
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: apigateway
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: listservice
 spec:
   selector:
@@ -103,18 +167,14 @@ spec:
       serviceAccountName: appmod-ksa
       containers:
         - name: server
-          image: gcr.io/YOUR_PROJECT_ID/frontend:v4.1
+          image: gcr.io/YOUR_PROJECT_ID/frontend:v4.2
           ports:
           - containerPort: 8080
           env:
           - name: PORT
             value: "8080"
-          - name: BACKEND_SERVICE_ADDR
-            value: "backendservice:50052"
-          - name: LIST_SERVICE_ADDR
-            value: "listservice:50054"
-          - name: UPDATE_SERVICE_ADDR
-            value: "updateservice:50053"
+          - name: API_GATEWAY_SERVICE_ADDR
+            value: "apigateway"
           resources:
             requests:
               cpu: 100m
@@ -242,4 +302,54 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
-
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobileloadgenerator
+spec:
+  selector:
+    matchLabels:
+      app: mobileloadgenerator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mobileloadgenerator
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      restartPolicy: Always
+      initContainers:
+      - command:
+        - /bin/sh
+        - -exc
+        - |
+          echo "Init container pinging frontend: ${FRONTEND_ADDR}..."
+          STATUSCODE=$(wget --server-response http://${FRONTEND_ADDR} 2>&1 | awk '/^  HTTP/{print $2}')
+          if test $STATUSCODE -ne 200; then
+              echo "Error: Could not reach frontend - Status code: ${STATUSCODE}"
+              exit 1
+          fi
+        name: frontend-check
+        image: busybox:latest
+        env:
+        - name: FRONTEND_ADDR
+          value: "apigateway:80"
+      containers:
+      - name: main
+        image: loadgenerator
+        env:
+        - name: FRONTEND_ADDR
+          value: "apigateway:80"
+        - name: USERS
+          value: "10"
+        resources:
+          requests:
+            cpu: 300m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
