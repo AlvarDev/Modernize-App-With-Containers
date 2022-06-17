@@ -1,9 +1,13 @@
-apiVersion: skaffold/v2beta27
+apiVersion: skaffold/v2beta28
 kind: Config
 metadata:
   name: -.microservices-with-api-gateway
 build:
   artifacts:
+  - image: apigateway
+    context: src/apigateway
+    docker:
+      dockerfile: Dockerfile
   - image: backendservice
     context: src/backend
     docker:
@@ -27,8 +31,10 @@ build:
 deploy:
   kubectl:
     manifests:
+    - kubernetes-manifests/apigatewayservice.yaml
     - kubernetes-manifests/backendservice.yaml
     - kubernetes-manifests/frontendservice.yaml
     - kubernetes-manifests/listservice.yaml
     - kubernetes-manifests/loadgenerator.yaml
+    - kubernetes-manifests/mobileloadgenerator.yaml
     - kubernetes-manifests/updateservice.yaml
