@@ -16,12 +16,7 @@ func (fe *frontendServer) listHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rms := make([]*pb.Remainder, len(remaindersResp.GetRemainders()))
-	for i, r := range remaindersResp.GetRemainders() {
-		rms[i] = r
-	}
-
-	responseJSON, _ := json.Marshal(rms)
+	responseJSON, _ := json.Marshal(remaindersResp.GetRemainders())
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(responseJSON)
