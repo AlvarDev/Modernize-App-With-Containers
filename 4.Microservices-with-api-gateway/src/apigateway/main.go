@@ -37,23 +37,23 @@ func main() {
 
 	mustMapEnv(&svc.backendSvcAddr, "BACKEND_SERVICE_ADDR")
 	mustMapEnv(&svc.listSvcAddr, "LIST_SERVICE_ADDR")
-	// mustMapEnv(&svc.updateSvcAddr, "UPDATE_SERVICE_ADDR")
+	mustMapEnv(&svc.updateSvcAddr, "UPDATE_SERVICE_ADDR")
 	mustConnGRPC(ctx, &svc.backendSvcConn, svc.backendSvcAddr)
 	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
-	//mustConnGRPC(ctx, &svc.updateSvcConn, svc.updateSvcAddr)
+	mustConnGRPC(ctx, &svc.updateSvcConn, svc.updateSvcAddr)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.listHandler).Methods(http.MethodGet)
 	r.HandleFunc("/add", svc.addHandler).Methods(http.MethodPost)
-	// r.HandleFunc("/delete", svc.deleteHandler).Methods(http.MethodGet)
-	// r.HandleFunc("/update", svc.updateHandler).Methods(http.MethodPost)
+	r.HandleFunc("/delete", svc.deleteHandler).Methods(http.MethodGet)
+	r.HandleFunc("/update", svc.updateHandler).Methods(http.MethodPost)
 
 	httpHandler := &ochttp.Handler{
 		Propagation: &propagation.HTTPFormat{},
 		Handler:     r,
 	}
 
-	log.Info().Msg("Starting manager service")
+	log.Info().Msg("Starting apigateway service")
 
 	if err := http.ListenAndServe(port, httpHandler); err != nil {
 		log.Fatal().Err(err).Msg("Can't start service")

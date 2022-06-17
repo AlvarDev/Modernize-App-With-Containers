@@ -28,17 +28,18 @@ func (fe *frontendServer) listHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (fe *frontendServer) addHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+
+	// Setting userUID because there is not Firebase Auth at this point
+	rmd := RmdPost{}
+	err := json.NewDecoder(r.Body).Decode(&rmd)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	// Setting userUID because there is not Firebase Auth at this point
-	remainder := r.PostForm.Get("remainder")
 	newRmd, err := fe.addRemainder(r.Context(),
 		&pb.AddRemainderRequest{
 			Remainder: &pb.Remainder{
-				Remainder: remainder,
+				Remainder: rmd.Remainder.GetRemainder(),
 				UserUID:   "no-user",
 			}})
 
@@ -52,16 +53,16 @@ func (fe *frontendServer) addHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseJSON)
 }
 
-/*
+// TODO: avoid use GET
 func (fe *frontendServer) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	// Setting userUID because there is not Firebase Auth at this point
 	remainderID := r.Form.Get("remainderID")
-	_, err = fe.deleteRemainder(r.Context(),
+	delRmd, err := fe.deleteRemainder(r.Context(),
 		&pb.DeleteRemainderRequest{
 			Remainder: &pb.Remainder{
 				RemainderID: remainderID,
@@ -69,33 +70,42 @@ func (fe *frontendServer) deleteHandler(w http.ResponseWriter, r *http.Request) 
 			}})
 
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	responseJSON, _ := json.Marshal(delRmd)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(responseJSON)
 }
 
 func (fe *frontendServer) updateHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+
+	rmd := RmdPost{}
+	err := json.NewDecoder(r.Body).Decode(&rmd)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	// Setting userUID because there is not Firebase Auth at this point
-	remainderID := r.PostForm.Get("remainderID")
-	remainder := r.PostForm.Get("remainder")
-	_, err = fe.updateRemainder(r.Context(),
+	upRmd, err := fe.updateRemainder(r.Context(),
 		&pb.UpdateRemainderRequest{
 			Remainder: &pb.Remainder{
-				RemainderID: remainderID,
+				RemainderID: rmd.Remainder.GetRemainderID(),
 				UserUID:     "no-user",
-				Remainder:   remainder,
+				Remainder:   rmd.Remainder.GetRemainder(),
 			}})
 
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	responseJSON, _ := json.Marshal(upRmd)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(responseJSON)
 }
-*/
+
+type RmdPost struct {
+	Remainder *pb.Remainder `json:"remainder"`
+}
