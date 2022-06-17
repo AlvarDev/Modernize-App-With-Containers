@@ -1,18 +1,14 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"go.opencensus.io/plugin/ochttp"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -20,40 +16,26 @@ const (
 )
 
 type frontendServer struct {
-	backendSvcAddr string
-	backendSvcConn *grpc.ClientConn
-
-	listSvcAddr string
-	listSvcConn *grpc.ClientConn
-
-	updateSvcAddr string
-	updateSvcConn *grpc.ClientConn
+	apigatewaySvcAddr string
 }
 
 func main() {
 
-	ctx := context.Background()
 	svc := new(frontendServer)
-
-	mustMapEnv(&svc.backendSvcAddr, "BACKEND_SERVICE_ADDR")
-	mustMapEnv(&svc.listSvcAddr, "LIST_SERVICE_ADDR")
-	mustMapEnv(&svc.updateSvcAddr, "UPDATE_SERVICE_ADDR")
-	mustConnGRPC(ctx, &svc.backendSvcConn, svc.backendSvcAddr)
-	mustConnGRPC(ctx, &svc.listSvcConn, svc.listSvcAddr)
-	mustConnGRPC(ctx, &svc.updateSvcConn, svc.updateSvcAddr)
+	mustMapEnv(&svc.apigatewaySvcAddr, "API_GATEWAY_SERVICE_ADDR")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.rootHandler).Methods(http.MethodGet)
-	r.HandleFunc("/add", svc.addHandler).Methods(http.MethodPost)
-	r.HandleFunc("/delete", svc.deleteHandler).Methods(http.MethodGet)
-	r.HandleFunc("/update", svc.updateHandler).Methods(http.MethodPost)
+	//r.HandleFunc("/add", svc.addHandler).Methods(http.MethodPost)
+	//r.HandleFunc("/delete", svc.deleteHandler).Methods(http.MethodGet)
+	//r.HandleFunc("/update", svc.updateHandler).Methods(http.MethodPost)
 
 	httpHandler := &ochttp.Handler{
 		Propagation: &propagation.HTTPFormat{},
 		Handler:     r,
 	}
 
-	log.Info().Msg("Starting manager service")
+	log.Info().Msg("Starting frontend service")
 
 	if err := http.ListenAndServe(port, httpHandler); err != nil {
 		log.Fatal().Err(err).Msg("Can't start service")
@@ -66,15 +48,4 @@ func mustMapEnv(target *string, envKey string) {
 		panic(fmt.Sprintf("environment variable %q not set", envKey))
 	}
 	*target = v
-}
-
-func mustConnGRPC(ctx context.Context, conn **grpc.ClientConn, addr string) {
-	var err error
-	ctx, cancel := context.WithTimeout(ctx, time.Second*3)
-	defer cancel()
-	*conn, err = grpc.DialContext(ctx, addr,
-		grpc.WithInsecure())
-	if err != nil {
-		panic(errors.Wrapf(err, "grpc: failed to connect %s", addr))
-	}
 }

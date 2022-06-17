@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	pb "frontendservice/pb"
-	"log"
+	"io"
 	"net/http"
 	"text/template"
 )
@@ -15,22 +15,35 @@ var (
 // helloRunHandler responds to requests by rendering an HTML page.
 func (fe *frontendServer) rootHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Setting userUID because there is not Firebase Auth at this point
-	remaindersResp, err := fe.listRemainders(r.Context(), &pb.ListRemaindersRequest{UserUID: "no-user"})
+	targetURL := fmt.Sprintf("http://%v/", fe.apigatewaySvcAddr)
+	resp, err := http.Get(targetURL)
 	if err != nil {
-		msg := http.StatusText(http.StatusInternalServerError)
-		log.Printf("Getting firestore data: %v", err)
-		http.Error(w, msg, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
 
+	type RmdResp struct {
+		RemainderID string `json:"remainderID"`
+		Remainder   string `json:"remainder"`
 	}
 
-	if err := tmpl.Execute(w, remaindersResp); err != nil {
+	var rms []RmdResp
+	err = json.Unmarshal([]byte(body), &rms)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.Execute(w, rms); err != nil {
+		fmt.Println(err)
 		msg := http.StatusText(http.StatusInternalServerError)
-		log.Printf("template.Execute: %v", err)
 		http.Error(w, msg, http.StatusInternalServerError)
 	}
 }
 
+/*
 func (fe *frontendServer) addHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -97,4 +110,4 @@ func (fe *frontendServer) updateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
+}*/

@@ -73,14 +73,14 @@
 		<br><br>
 
 		<section>
-			{{ with .GetRemainders }}
+			{{ with . }}
 				{{ range . }}
 					<form action="/delete" style="display: inline-block;">
 						<div class="demo-card-wide mdl-card mdl-shadow--2dp" style="display: inline-block;">
 							<div class="mdl-card__supporting-text">
-								{{.GetRemainder }}
+								{{.Remainder }}
 							</div>
-							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
+							<input type="hidden" name="remainderID" value="{{ .RemainderID }}">
 							<div class="mdl-card__actions mdl-card--border" style="display: inline-block;">
 								<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
 									Delete
@@ -88,16 +88,16 @@
 							</div>
 						</div>
 					</form>
-					<div id="{{ .GetRemainderID }}-edit" class="mdl-card__actions mdl-card--border" style="display: inline-block; vertical-align: top; width: 1%;">
-						<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="showEdit('{{ .GetRemainderID }}')">
+					<div id="{{ .RemainderID }}-edit" class="mdl-card__actions mdl-card--border" style="display: inline-block; vertical-align: top; width: 1%;">
+						<button  class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="showEdit('{{ .RemainderID }}')">
 							<i class="material-icons">edit</i>
 						</button>
 					</div>
 					<br><br>
-					<form id="{{ .GetRemainderID }}-form" action="/update" method="post" style="display: none;">
+					<form id="{{ .RemainderID }}-form" action="/update" method="post" style="display: none;">
 						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-							<input type="hidden" name="remainderID" value="{{ .GetRemainderID }}">
-						  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" value="{{.GetRemainder }}" required>
+							<input type="hidden" name="remainderID" value="{{ .RemainderID }}">
+						  <input class="mdl-textfield__input" type="text" id="remainder" name="remainder" autocomplete="off" value="{{.Remainder }}" required>
 						  <label class="mdl-textfield__label" for="sample3">Remainder...</label>
 						</div>
 						&nbsp;	&nbsp;	&nbsp;
